@@ -65,7 +65,7 @@ CLOSED: [2016-12-08 Thu 02:51]
 *input*: client
 *effect*: Downgrades a VIP client to REGULAR
 *** DONE Drivers
-CLOSED: [2016-12-08 Thu 17:18]
+CLOSED: [2016-12-08 Thu 19:54]
 **** DONE newDriver
 CLOSED: [2016-12-08 Thu 16:54]
 *input*: driver, name, license
@@ -76,28 +76,35 @@ CLOSED: [2016-12-08 Thu 17:01]
 *input*: driver
 *effect*: Removes the registered driver driver.
 **** DONE banDriver
-CLOSED: [2016-12-08 Thu 17:18]
+CLOSED: [2016-12-08 Thu 19:54]
 *input*: driver
 *effect*: Removes the registered driver /driver/ from Zober, disallowing him
 from any future registration. If /driver/ is the owner of some car, those cars
 should also be removed from the system.
-*** TODO Cars
-**** TODO addCar
+*** DONE Cars
+CLOSED: [2016-12-08 Thu 19:53]
+**** DONE addCar
+CLOSED: [2016-12-08 Thu 19:00]
 *input*: car, owner
 *effect*: Registers a new car, owned by /owner/
-**** TODO removeCar
+**** DONE removeCar
+CLOSED: [2016-12-08 Thu 19:53]
 *input*: car
 *effect*: Removes /car/
-**** TODO addDriverToCar
+**** DONE addDriverToCar
+CLOSED: [2016-12-08 Thu 19:24]
 *input*: car, driver
 *effect*: Associates /driver/ to /car/
-**** TODO removeDriverFromCar
+**** DONE removeDriverFromCar
+CLOSED: [2016-12-08 Thu 19:49]
 *input*: car, driver
 *effect*: Deassociates /driver/ from /car/
-**** TODO upgradeService
+**** DONE upgradeService
+CLOSED: [2016-12-08 Thu 19:52]
 *input*: car
 *effect*: Changes the service offered by /car/ to ZoberWhite
-**** TODO downgradeService
+**** DONE downgradeService
+CLOSED: [2016-12-08 Thu 19:53]
 *input*: car
 *effect*: Changes the service offered by /car/ to ZoberY
 *** TODO Rides
@@ -133,17 +140,17 @@ for some available car of type /srv/
 17. [X] It is possible to ban a driver from Zober. In this case, it should not be
 possible to add him again at a later stage;
 *** TODO Cars
-18. [@18] [ ] Every car in CARS may be registered in Z ̈ober, as long as it is not registered yet;
-19. [ ] All cars registered in Z ̈ober have a single owner;
+18. [@18] [X] Every car in CARS may be registered in Zober, as long as it is not registered yet;
+19. [ ] All cars registered in Zober have a single owner;
 20. [ ] A registered car has at least 1 associated driver, and may have at most 3;
 21. [ ] The owner of a car is one of the drivers of the car;
-22. [ ] Only registered drivers may be drivers of a car;
-23. [ ] Each driver cannot be associated with more than 2 cars;
-24. [ ] Each car provides one of the available services: Z ̈oberY, or Z ̈oberWhite;
-25. [ ] At the beginning there are no cars registered in Z ̈ober;
-26. [ ] The initial service provided by every car is Z ̈oberY;
-27. [ ] Only (and every) registered car may be removed from Z ̈ober;
-28. [ ] Every (and only) registered driver(s) may be associated with/removed
+22. [X] Only registered drivers may be drivers of a car;
+23. [X] Each driver cannot be associated with more than 2 cars;
+24. [ ] Each car provides one of the available services: ZoberY, or ZoberWhite;
+25. [ ] At the beginning there are no cars registered in Zober;
+26. [X] The initial service provided by every car is ZoberY;
+27. [X] Only (and every) registered car may be removed from Zober;
+28. [X] Every (and only) registered driver(s) may be associated with/removed
 from a car;
 *** TODO Rides
 29. [@29] [ ] Each ride has a unique identifier and his composed of a client, a time-frame (begin and end), a type of service, and is associated with a given car.
@@ -152,7 +159,7 @@ from a car;
 32. [ ] No car has overlapping rides;
 33. [ ] Every completed ride has an associated rating (from 1 to 5);
 34. [ ] A REGULAR client can have at most 2 booked (non-overlapping) rides at each time; VIP clients may book as many as they want (but also non- overlapping );
-35. [ ] VIP clients only travel in Z ̈oberWhite cars;
+35. [ ] VIP clients only travel in ZoberWhite cars;
 36. [ ] Clients with reserved rides cannot be removed from the system;
 37. [ ] Any non-completed ride can be canceled;
 38. [ ] If a driver is banned, his rides and the cars he owns are immediately remo- ved from the system;
