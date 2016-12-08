@@ -46,24 +46,24 @@ pred newClient(z, z': Zober, c: Client - z.clients) {
 emailsAreUnique: check {
     all z: Zober, c1, c2: z.clients | 
         c1 != c2 => c1.email != c2.email
-}
+} for 10
 
 // Req. 4
 clientPlanIsRegularOrVip: check {
     all z: Zober, c: z.clients | 
         c.plan in REGULAR + VIP
-}
+} for 10
 
 // Req. 5
 noClientsAtTheBeginning: check {
      no ZoberStates/first.clients
-}
+} for 10
 
 // Req. 7
 clientInitialPlanIsRegular: check {
     all z: Zober, c: z.next.clients - z.clients | 
         c.plan in REGULAR
-}
+} for 10
 
 pred removeClient(z, z': Zober, c: z.clients) {
     z'.clients = z.clients - c
@@ -73,7 +73,7 @@ pred removeClient(z, z': Zober, c: z.clients) {
 onlyRegisteredClientsMayBeRemoved: check {
     all z: Zober, c: Client | 
         z.next.clients = z.clients - c => c in z.clients
-}
+} for 10
 
 pred upgradePlan(z, z': Zober, c: z.clients, c': z'.clients) {
     c.plan in REGULAR
@@ -94,17 +94,19 @@ onlyRegisteredClientsMayBeUpgradedOrDowngraded: check {
     all z, z': Zober, c, c': Client |
         upgradePlan[z, z', c, c'] or downgradePlan[z, z', c, c'] 
             => c in z.clients
-}
+} for 10
 
+// Req. 10
+onlyRegularsMayBeUpgraded: check {
+    all z, z': Zober, c, c': Client |
+        upgradePlan[z, z', c, c'] => c.plan in REGULAR
+} for 10
 
-
-
-
-
-
-
-
-
+// Req. 10
+onlyVipsMayBeDowngraded: check {
+    all z, z': Zober, c, c': Client |
+        downgradePlan[z, z', c, c'] => c.plan in VIP
+} for 10
 
 // ------------------------------ DRIVERS --------------------------------------
 

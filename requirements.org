@@ -119,9 +119,9 @@ CLOSED: [2016-12-08 Thu 02:51]
 7. [X] The original plan of a client is REGULAR;
 8. [X] Only (and every) registered client may be removed from Zober;
 9. [X] Only registered clients may be upgraded to profile type VIP/downgraded to profile type REGULAR;
+10. [X] Only REGULAR clients may be upgraded to VIP (and downgraded vice- versa)
 *** TODO Drivers
-10. [@10] [ ] Only REGULAR clients may be upgraded to VIP (and downgraded vice- versa)
-11. [ ] Every driver in DRIVERS may register in Z ̈ober;
+11. [@11] [ ] Every driver in DRIVERS may register in Z ̈ober;
 12. [ ] All drivers registered in Z ̈ober have a name, and a driver’s license;
 13. [ ] The driver’s licenses registered in Z ̈ober are unique;
 14. [ ] At the beginning there are no drivers registered in Z ̈ober;
