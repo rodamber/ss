@@ -1,18 +1,20 @@
 * TODO Requirements
+- [ ] At the end we need to review all the remove predicates (and their
+  assertions) to make sure that they don't change more than they're supposed to.
 ** TODO General
 - [ ] Clients, drivers, and cars have unique identifiers within the system.
 - [ ] There are no two clients, nor drivers, nor cars, sharing the same
   identifier.
-** TODO 2.1 Clients
-- [ ] Registered clients have a name and an associated e-mail.
-- [ ] A user e-mail should be unique.
-- [ ] At the beginning there are no registered clients.
-- [ ] Add/remove clients.
-  - [ ] Add (if they do not exist in the system).
-  - [ ] Remove (if they do not exist in the system).
-- [ ] Upgrade/dowgrade status.
-  - [ ] Upgrade (if it can be upgraded).
-  - [ ] Downgrade (if it can be downgraded).
+** Sets
+- CLIENTS
+- DRIVERS
+- CARS
+- NAMES
+- RIDES
+- EMAILS
+- LICENSES
+- ZOBERSERVICE (ZoberY, ZoberWhite)
+- PLAN (VIP, REGULAR)
 ** TODO 2.2 Drivers
 - [ ] Each driver in has a name and a valid driver’s license.
 - [ ] At the beginning there are no drivers.
@@ -43,18 +45,23 @@
 - [ ] VIP clients always book ZoberWhite cars.
 - [ ] Regular clients may only book two rides at a time.
 ** TODO 2.5 Operations
-*** TODO Clients
-**** TODO newClient
+*** DONE Clients
+CLOSED: [2016-12-08 Thu 02:51]
+**** DONE newClient
+CLOSED: [2016-12-08 Thu 02:14]
 *input*: client, name, email
 *effect*: Registers a new client with identifier client, with the given name,
 and with the given e-mail
-**** TODO removeClient
+**** DONE removeClient
+CLOSED: [2016-12-08 Thu 02:27]
 *input*: client
 *effect*: Removes the registered client client
-**** TODO upgradePlan
+**** DONE upgradePlan
+CLOSED: [2016-12-08 Thu 02:50]
 *input*: client
 *effect*: Upgrades a REGULAR client to VIP
-**** TODO downgradePlan
+**** DONE downgradePlan
+CLOSED: [2016-12-08 Thu 02:51]
 *input*: client
 *effect*: Downgrades a VIP client to REGULAR
 *** TODO Drivers
@@ -101,16 +108,17 @@ for some available car of type /srv/
 *input*: ride, grade
 *effect*: Completes /ride/ and assigns /grade/ to it
 ** TODO Restrictions
-*** TODO Clients
-1. [ ] Every client in CLIENT may register in Zober;
-2. [ ] All clients registered in Zober have a name, and an e-mail;
-3. [ ] The e-mails registered in Zober are unique;
-4. [ ] The plan of a client may be REGULAR or VIP;
-5. [ ] At the beginning there are no clients registered in Zober;
-6. [ ] Any client may register himself in Z ̈ober as long as he is not registered yet;
-7. [ ] The original plan of a client is REGULAR;
-8. [ ] Only (and every) registered client may be removed from Z ̈ober;
-9. [ ] Only registered clients may be upgraded to profile type VIP/downgraded to profile type REGULAR;
+*** DONE Clients
+CLOSED: [2016-12-08 Thu 02:51]
+1. [X] Every client in CLIENT may register in Zober;
+2. [X] All clients registered in Zober have a name, and an e-mail;
+3. [X] The e-mails registered in Zober are unique;
+4. [X] The plan of a client may be REGULAR or VIP;
+5. [X] At the beginning there are no clients registered in Zober;
+6. [X] Any client may register himself in Zober as long as he is not registered yet;
+7. [X] The original plan of a client is REGULAR;
+8. [X] Only (and every) registered client may be removed from Zober;
+9. [X] Only registered clients may be upgraded to profile type VIP/downgraded to profile type REGULAR;
 *** TODO Drivers
 10. [@10] [ ] Only REGULAR clients may be upgraded to VIP (and downgraded vice- versa)
 11. [ ] Every driver in DRIVERS may register in Z ̈ober;
