@@ -17,26 +17,35 @@ pred zoberInit[z: Zober] {
     no z.cars          // Req. 25
 }
 
-fact traces {
-    first.zoberInit
+// fact traces {
+//     first.zoberInit
+//     all z: Zober - last | let z' = z.next | 
+//         some c, c': Client |
+//         some d: Driver |
+//         some car, car': Car |
+//             newClient[z, z', c]                      or
+//             removeClient[z, z', c]                   or 
+//             upgradePlan[z, z', c, c']                or
+//             downgradePlan[z, z', c, c']              or
+//             newDriver[z, z', d]                      or
+//             removeDriver[z, z', d]                   or
+//             banDriver[z, z', d]                      or
+//             addCar[z, z', car]                       or
+//             removeCar[z, z', car]                    or
+//             addDriverToCar[z, z', car, car', d]      or
+//             removeDriverFromCar[z, z', car, car', d] or
+//             upgradeService[z, z', car, car']         or
+//             downgradeService[z, z', car, car']
+// }
 
+fact debug_trace {
+    first.zoberInit
     all z: Zober - last | let z' = z.next | 
-        some c, c': Client |
-        some d: Driver |
-        some car, car': Car |
-            newClient[z, z', c]                      or
-            removeClient[z, z', c]                   or 
-            upgradePlan[z, z', c, c']                or
-            downgradePlan[z, z', c, c']              or
-            newDriver[z, z', d]                      or
-            removeDriver[z, z', d]                   or
-            banDriver[z, z', d]                      or
-            addCar[z, z', car]                       or
-            removeCar[z, z', car]                    or
-            addDriverToCar[z, z', car, car', d]      or
-            removeDriverFromCar[z, z', car, car', d] or
-            upgradeService[z, z', car, car']         or
-            downgradeService[z, z', car, car']
+        some c: Car |
+            some d: Driver |
+                addCar[z, z', c] or
+                newDriver[z, z', d] or
+                removeCar[z, z', c]
 }
 
 // ------------------------------ CLIENTS --------------------------------------
@@ -65,7 +74,10 @@ pred newClient(z, z': Zober, c: z'.clients - z.clients) {
 }
 
 // Req. 8
-pred removeClient(z, z': Zober, c: z.clients) {
+pred removeClient(z, z': Zober, c: z.clients - z'.clients) {
+    c in z.clients // fixme: I don't know why, but alloy seems to ignore the fact
+                   // that c is in z.clients
+
     z'.clients = z.clients - c
     z'.drivers = z.drivers
     z'.bannedDrivers = z.bannedDrivers
@@ -120,7 +132,7 @@ clientInitialPlanIsRegular: check {
 onlyRegisteredClientsMayBeRemoved: check {
     all z, z': Zober, c: Client | 
         removeClient[z, z', c] => c in z.clients
-} for 2
+} for 5
 
 // Req. 9
 onlyRegisteredClientsMayBeUpgradedOrDowngraded: check {
@@ -160,8 +172,16 @@ pred newDriver(z, z': Zober, d: z'.drivers - z.drivers) {
     z'.cars = z.cars
 }
 
-pred removeDriver(z, z': Zober, d: z.drivers) {
-    newDriver[z', z, d]
+pred removeDriver(z, z': Zober, d: z.drivers - z'.drivers) {
+    d in z.drivers // fixme: I don't know why, but alloy seems to ignore the fact
+                   // that d is in z.drivers
+
+    z'.clients = z.clients
+    z'.drivers = z.drivers - d
+    z'.bannedDrivers = z.bannedDrivers
+    z'.cars = z.cars - owner.d
+
+    removeDriverFromRegisteredCars[z, z', d]
 }
 
 pred banDriver(z, z': Zober, d: z.drivers) {
@@ -170,13 +190,15 @@ pred banDriver(z, z': Zober, d: z.drivers) {
 
     z'.clients = z.clients
     z'.cars = z.cars - owner.d
+
+    removeDriverFromRegisteredCars[z, z', d]
 }
 
 // Req. 13
 licensesAreUnique: check {
     all z: Zober, d1, d2: z.drivers | 
         d1 != d2 => d1.license != d2.license
-}
+} for 5
 
 // Req. 14
 noDriversAtTheBeginning: check {
@@ -193,7 +215,7 @@ mayOnlyRegisterDriverIfNotYetRegistered: check {
 onlyRegisteredDriversMayBeRemoved: check {
     all z, z': Zober, d: Driver |
         removeDriver[z, z', d] => d in z.drivers
-}
+} for 5
 
 bannedDriversMayNotDrive: check {
     all z: Zober, d: z.bannedDrivers |
@@ -218,17 +240,26 @@ abstract sig ZoberService {}
 one sig ZoberY, ZoberWhite extends ZoberService {}
 
 pred addCar(z, z': Zober, c: z'.cars - z.cars) {
-    c.drivers in z.drivers
+    // fixme: I don't know why, but alloy seems to ignore the fact that c is
+    // not in z.cars
+    c not in z.cars
 
-    c.owner in c.drivers // Req. 21
+    c.owner in c.drivers                          // Req. 21
+    c.drivers in z.drivers                        // Req. 22
+    all d: c.drivers | #(z.cars <: drivers).d < 2 // Req. 23
+    c.service in ZoberY                           // Req. 26
+
     z'.cars = z.cars + c
-
     z'.clients = z.clients
     z'.drivers = z.drivers
     z'.bannedDrivers = z.bannedDrivers
 }
 
 pred removeCar(z, z': Zober, c: z.cars - z'.cars) {
+    // fixme: I don't know why, but alloy seems to ignore the fact that c is
+    // in z.cars
+    c in z.cars
+
     z'.cars = z.cars - c
     z'.clients = z.clients
     z'.drivers = z.drivers
@@ -247,6 +278,7 @@ pred addDriverToCar(z, z': Zober, c: z.cars, c': z'.cars, d: z.drivers) {
 }
 
 pred removeDriverFromCar(z, z': Zober, c: z.cars, c': z'.cars, d: c.drivers) {
+    d != c.owner
     addDriverToCar[z', z, c', c, d]
 }
 
@@ -269,7 +301,7 @@ pred downgradeService(z, z': Zober, c: z.cars, c': z'.cars) {
 mayOnlyRegisterCarIfNotYetRegistered: check {
     all z, z': Zober, c: Car |
         addCar[z, z', c] => c not in z.cars
-} for 2 but 1 Car, 0 Client, 1 Driver
+} for 5
 
 // Req. 19
 carsHaveASingleOwner: check {
@@ -284,17 +316,17 @@ carsHaveHaveBetween1and3Drivers: check {
 
 // Req. 21
 carOwnerIsOneOfTheDrivers: check {
-    all c: Car | c.owner in c.drivers
+    all z: Zober, c: z.cars | 
+        c.owner in c.drivers
 } for 5
 
-// Req. 22, 28
+// Req. 22
 carDriversMustBeRegistered: check {
     all z: Zober, c: z.cars |
         c.drivers in z.drivers
 } for 5
 
 // Req. 23
-// FIXME: I bet the predicates don't respect this.
 driverMayNotDriveMoreThanTwoCars: check {
     all z: Zober, d: z.drivers |
         #(z.cars <: drivers).d <= 2
@@ -303,7 +335,7 @@ driverMayNotDriveMoreThanTwoCars: check {
 // Req. 24
 carsProvideZoberYOrZoberWhite: check {
     all c: Car | c.service in ZoberY + ZoberWhite
-}
+} for 5
 
 // Req. 25
 noCarsAtTheBeginning: check {
@@ -314,19 +346,20 @@ noCarsAtTheBeginning: check {
 carInitialServiceIsZoberY: check {
     all z, z': Zober, c: Car |
         addCar[z, z', c] => c.service in ZoberY
-}
+} for 5
 
 // Req. 27
 onlyRegisteredCarsMayBeRemoved: check {
     all z, z': Zober, c: Car |
         removeCar[z, z', c] => c in z.cars
-}
+} for 5
 
 // Req. 28
+// fixme: what about the every part?
 onlyRegistedDriversMayBeRemovedFromACar: check {
     all z, z': Zober, c, c': Car, d: Driver |
         removeDriverFromCar[z, z', c, c', d] => d in z.drivers
-}
+} for 5
 
 
 // ------------------------------ RIDES ----------------------------------------
@@ -336,9 +369,14 @@ onlyRegistedDriversMayBeRemovedFromACar: check {
 
 // ------------------------------ UTILS ----------------------------------------
 
+// Remove driver from all registered cars in the current state.
+pred removeDriverFromRegisteredCars(z, z': Zober, d: z.drivers) {
+    // This complicated mess is a simple range subtraction.
+    // z'.cars <| drivers = z.cars <| drivers |>> d
+    z'.cars <: drivers = (z.cars <: drivers) - (z.cars <: drivers :> d)
+}
 
 // ------------------------------ RUN ------------------------------------------
 
 pred show { }
-
 run show for 5

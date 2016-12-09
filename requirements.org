@@ -119,7 +119,8 @@ for some available car of type /srv/
 *input*: ride, grade
 *effect*: Completes /ride/ and assigns /grade/ to it
 ** TODO Restrictions
-*** TODO Clients
+*** DONE Clients
+CLOSED: [2016-12-08 Thu 22:41]
 1. [X] Every client in CLIENT may register in Zober;
 2. [X] All clients registered in Zober have a name, and an e-mail;
 3. [X] The e-mails registered in Zober are unique;
@@ -127,27 +128,29 @@ for some available car of type /srv/
 5. [X] At the beginning there are no clients registered in Zober;
 6. [X] Any client may register himself in Zober as long as he is not registered yet;
 7. [X] The original plan of a client is REGULAR;
-8. [ ] Only (and every) registered client may be removed from Zober;
+8. [X] Only (and every) registered client may be removed from Zober;
 9. [X] Only registered clients may be upgraded to profile type VIP/downgraded to profile type REGULAR;
 10. [X] Only REGULAR clients may be upgraded to VIP (and downgraded vice- versa)
-*** TODO Drivers
+*** DONE Drivers
+CLOSED: [2016-12-08 Thu 22:39]
 11. [@11] [X] Every driver in DRIVERS may register in Zober;
 12. [X] All drivers registered in Zober have a name, and a driver’s license;
 13. [X] The driver’s licenses registered in Zober are unique;
 14. [X] At the beginning there are no drivers registered in Zober;
 15. [X] Any driver may register himself in Zober as long as he is not registered yet;
-16. [ ] Only (and every) registered driver may be removed from Zober;
+16. [X] Only (and every) registered driver may be removed from Zober;
 17. [X] It is possible to ban a driver from Zober. In this case, it should not be
 possible to add him again at a later stage;
-*** TODO Cars
+*** DONE Cars
+CLOSED: [2016-12-09 Fri 02:39]
 18. [@18] [X] Every car in CARS may be registered in Zober, as long as it is not registered yet;
-19. [ ] All cars registered in Zober have a single owner;
-20. [ ] A registered car has at least 1 associated driver, and may have at most 3;
-21. [ ] The owner of a car is one of the drivers of the car;
+19. [X] All cars registered in Zober have a single owner;
+20. [X] A registered car has at least 1 associated driver, and may have at most 3;
+21. [X] The owner of a car is one of the drivers of the car;
 22. [X] Only registered drivers may be drivers of a car;
 23. [X] Each driver cannot be associated with more than 2 cars;
-24. [ ] Each car provides one of the available services: ZoberY, or ZoberWhite;
-25. [ ] At the beginning there are no cars registered in Zober;
+24. [X] Each car provides one of the available services: ZoberY, or ZoberWhite;
+25. [X] At the beginning there are no cars registered in Zober;
 26. [X] The initial service provided by every car is ZoberY;
 27. [X] Only (and every) registered car may be removed from Zober;
 28. [X] Every (and only) registered driver(s) may be associated with/removed
