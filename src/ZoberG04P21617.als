@@ -281,9 +281,6 @@ pred addDriverToCar(z, z': Zober, c: z.cars, c': z'.cars, d: z.drivers) {
     c'.owner = c.owner
     c'.drivers = c.drivers + d
 
-    // fixme: check if this holds now that we've added rides
-    // maybe it doesn't because cars can't be removed if there are pending rides
-    // for it
     addCar[z, z', c']
     removeCar[z, z', c]
 }
@@ -300,9 +297,6 @@ pred upgradeService(z, z': Zober, c: z.cars, c': z'.cars) {
     c'.owner = c.owner
     c'.drivers = c.drivers
 
-    // fixme: check if this holds now that we've added rides
-    // maybe it doesn't because cars can't be removed if there are pending rides
-    // for it
     addCar[z, z', c']
     removeCar[z, z', c]
 }

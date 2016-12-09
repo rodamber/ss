@@ -1,12 +1,8 @@
 * TODO Requirements
-- [ ] At the end we need to review all the predicates (and their assertions) to make sure that they don't change more than they're supposed to.
-- [ ] Remember to fix the fixmes
+- [X] At the end we need to review all the predicates (and their assertions) to make sure that they don't change more than they're supposed to.
+- [X] Remember to fix the fixmes
 - [ ] Check if there is a simpler way to implement the predicates upgradePlan,
   addDriverToCar, etc
-** TODO General
-- [ ] Clients, drivers, and cars have unique identifiers within the system.
-- [ ] There are no two clients, nor drivers, nor cars, sharing the same
-  identifier.
 ** Sets
 - CLIENTS
 - DRIVERS
@@ -17,36 +13,8 @@
 - LICENSES
 - ZOBERSERVICE (ZoberY, ZoberWhite)
 - PLAN (VIP, REGULAR)
-** TODO 2.2 Drivers
-- [ ] Each driver in has a name and a valid driver’s license.
-- [ ] At the beginning there are no drivers.
-- [ ] Add/remove/ban drivers.
-  - [ ] Add (if they're not registered already).
-  - [ ] Remove (if they exist in the system).
-  - [ ] Ban (banned drivers cannot be added again).
-** TODO 2.3 Cars
-- [ ] Each car has an owner, a set of drivers and a service.
-- [ ] At the beginning there are no cars.
-- [ ] Add/remove cars.
-  - [ ] Add
-  - [ ] Remove
-- [ ] 3 drivers/car maximum.
-- [ ] Owner belongs to the set of drivers.
-- [ ] Each driver can only drive up to two cars.
-- [ ] Cars originally provide the ZoberY service.
-- [ ] Upgrade/downgrade service.
-  - [ ] Upgrade (must be providing ZoberY).
-  - [ ] Downgrade (must be providing ZoberWhite).
-** TODO 2.4 Rides
-- [ ] A ride has as attributes:
-  - [ ] Car;
-  - [ ] Client;
-  - [ ] Level of service;
-  - [ ] Beginning and end (represented as natural numbers);
-  - [ ] Maybe the rate?
-- [ ] VIP clients always book ZoberWhite cars.
-- [ ] Regular clients may only book two rides at a time.
-** TODO 2.5 Operations
+** DONE 2.5 Operations
+CLOSED: [2016-12-09 Fri 19:42]
 *** DONE Clients
 CLOSED: [2016-12-08 Thu 02:51]
 **** DONE newClient
@@ -109,15 +77,19 @@ CLOSED: [2016-12-08 Thu 19:52]
 CLOSED: [2016-12-08 Thu 19:53]
 *input*: car
 *effect*: Changes the service offered by /car/ to ZoberY
-*** TODO Rides
-**** TODO newRide
+*** DONE Rides
+CLOSED: [2016-12-09 Fri 19:42]
+**** DONE newRide
+CLOSED: [2016-12-09 Fri 19:42]
 *input*: ride, srv, client, begin, end
 *effect*: Schedules a new ride /ride/ for this client, in the defined period,
 for some available car of type /srv/
-**** TODO cancelRide
+**** DONE cancelRide
+CLOSED: [2016-12-09 Fri 19:42]
 *input*: ride
 *effect*: Cancels the previously scheduled /ride/
-**** TODO completeRide
+**** DONE completeRide
+CLOSED: [2016-12-09 Fri 19:42]
 *input*: ride, grade
 *effect*: Completes /ride/ and assigns /grade/ to it
 ** DONE Restrictions
