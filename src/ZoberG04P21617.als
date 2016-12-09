@@ -87,8 +87,8 @@ pred newClient(z, z': Zober, c: z'.clients - z.clients) {
 
 // Req. 8
 pred removeClient(z, z': Zober, c: z.clients - z'.clients) {
-    c in z.clients // fixme: I don't know why, but alloy seems to ignore the fact
-                   // that c is in z.clients
+    // fixme: I don't know why, but alloy seems to ignore the fact that c is in z.clients
+    c in z.clients
 
     z'.clients       = z.clients - c
     z'.drivers       = z.drivers
@@ -187,32 +187,28 @@ pred newDriver(z, z': Zober, d: z'.drivers - z.drivers) {
 }
 
 pred removeDriver(z, z': Zober, d: z.drivers - z'.drivers) {
-    d in z.drivers // fixme: I don't know why, but alloy seems to ignore the fact
-                   // that d is in z.drivers
+    // fixme: I don't know why, but alloy seems to ignore the fact that d is in z.drivers
+    d in z.drivers
 
-    z'.clients = z.clients
-    z'.drivers = z.drivers - d
+    owner.d not in bookedRides[z].car // Req. 40
+
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers - d
     z'.bannedDrivers = z.bannedDrivers
-    z'.cars = z.cars - owner.d
+    z'.cars          = z.cars - owner.d
+    z'.rides         = z.rides
 
     removeDriverFromRegisteredCars[z, z', d]
-
-    // A driver can't be removed if a car he owns has a pending ride.
-    // fixme
 }
 
 pred banDriver(z, z': Zober, d: z.drivers) {
-    z'.drivers = z.drivers - d
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers - d
     z'.bannedDrivers = z.bannedDrivers + d
-
-    z'.clients = z.clients
-    z'.cars = z.cars - owner.d
+    z'.cars          = z.cars - owner.d // Req. 38
+    z'.rides         = z.rides - car.owner.d // Req. 38
 
     removeDriverFromRegisteredCars[z, z', d]
-
-    //fixme
-    // if a driver is banned cancel all the rides related with the cars s/he owns
-
 }
 
 // Req. 13
@@ -261,8 +257,7 @@ abstract sig ZoberService {}
 one sig ZoberY, ZoberWhite extends ZoberService {}
 
 pred addCar(z, z': Zober, c: z'.cars - z.cars) {
-    // fixme: I don't know why, but alloy seems to ignore the fact that c is
-    // not in z.cars
+    // fixme: I don't know why, but alloy seems to ignore the fact that c is not in z.cars
     c not in z.cars
 
     c.owner in c.drivers                          // Req. 21
@@ -278,18 +273,16 @@ pred addCar(z, z': Zober, c: z'.cars - z.cars) {
 }
 
 pred removeCar(z, z': Zober, c: z.cars - z'.cars) {
-    // fixme: I don't know why, but alloy seems to ignore the fact that c is
-    // in z.cars
+    // fixme: I don't know why, but alloy seems to ignore the fact that c is in z.cars
     c in z.cars
 
-    z'.cars = z.cars - c
-    z'.clients = z.clients
-    z'.drivers = z.drivers
-    z'.bannedDrivers = z.bannedDrivers
+    c not in bookedRides[z].car // Req. 39
 
-    // fixme Req. 39
-    // a car cannot be removed from the system if there are pending reservations
-    // for this car
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers
+    z'.bannedDrivers = z.bannedDrivers
+    z'.cars          = z.cars - c
+    z'.rides         = z.rides
 }
 
 pred addDriverToCar(z, z': Zober, c: z.cars, c': z'.cars, d: z.drivers) {
@@ -447,7 +440,7 @@ pred completeRide(z, z': Zober, r: z.rides, grade: Int) {
 carIsAtLeastAsGoodAsWeNeed: check {
     all z: Zober, r: z.rides |
         r.service = ZoberWhite => r.car.service = ZoberWhite
-} for 2 but 1 Client, 1 Ride, 1 Car, 1 Driver
+} for 5
 
 // Req. 31
 everyRideIsWellFormed: check {
@@ -457,8 +450,8 @@ everyRideIsWellFormed: check {
 
 // Req. 32
 noCarHasOverlappingRides: check {
-    all z: Zober, c: z.cars, r, r': car.c |
-        r.end < r'.beginning or r'.end < r.beginning
+    all z: Zober, c: z.cars, r, r': (z.rides <: car).c |
+        r != r' => r.end < r'.beginning or r'.end < r.beginning
 } for 5
 
 // Req. 33
@@ -497,9 +490,9 @@ bannedDriverHasItsCarsAndRidesRemoved: check {
     all z, z': Zober, d: z.drivers |
         banDriver[z, z', d] => 
             // Should remove the cars owned by the driver
-            owner.d not in z'.cars and
+            (all c: owner.d | c not in z'.cars) and
             // Remove the rides of cars owned by the driver
-            car.owner.d not in z'.rides
+            (all r: car.owner.d | r not in z'.rides)
 } for 5
 
 // Req. 39
