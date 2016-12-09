@@ -1,6 +1,8 @@
 * TODO Requirements
 - [ ] At the end we need to review all the predicates (and their assertions) to make sure that they don't change more than they're supposed to.
 - [ ] Remember to fix the fixmes
+- [ ] Check if there is a simpler way to implement the predicates upgradePlan,
+  addDriverToCar, etc
 ** TODO General
 - [ ] Clients, drivers, and cars have unique identifiers within the system.
 - [ ] There are no two clients, nor drivers, nor cars, sharing the same
@@ -157,15 +159,15 @@ CLOSED: [2016-12-09 Fri 02:39]
 from a car;
 *** TODO Rides
 29. [@29] [X] Each ride has a unique identifier and his composed of a client, a time-frame (begin and end), a type of service, and is associated with a given car.
-30. [ ] The car associated with a ride, is able to provide the level of service required for that ride.
-31. [ ] Every ride is well-formed, that is, the end is later than its beginning;
-32. [ ] No car has overlapping rides;
-33. [ ] Every completed ride has an associated rating (from 1 to 5);
-34. [ ] A REGULAR client can have at most 2 booked (non-overlapping) rides at each time; VIP clients may book as many as they want (but also non- overlapping );
-35. [ ] VIP clients only travel in ZoberWhite cars;
-36. [ ] Clients with reserved rides cannot be removed from the system;
-37. [ ] Any non-completed ride can be canceled;
-38. [ ] If a driver is banned, his rides and the cars he owns are immediately remo- ved from the system;
-39. [ ] A car cannot be removed from the system if there are pending reservations for this car;
-40. [ ] The owner of a car cannot be removed from the system if there are pending reservations for one of the cars he owns;
+30. [X] The car associated with a ride, is able to provide the level of service required for that ride.
+31. [X] Every ride is well-formed, that is, the end is later than its beginning;
+32. [X] No car has overlapping rides;
+33. [X] Every completed ride has an associated rating (from 1 to 5);
+34. [X] A REGULAR client can have at most 2 booked (non-overlapping) rides at each time; VIP clients may book as many as they want (but also non- overlapping );
+35. [X] VIP clients only travel in ZoberWhite cars;
+36. [X] Clients with reserved rides cannot be removed from the system;
+37. [X] Any non-completed ride can be canceled;
+38. [X] If a driver is banned, his rides and the cars he owns are immediately removed from the system;
+39. [X] A car cannot be removed from the system if there are pending reservations for this car;
+40. [X] The owner of a car cannot be removed from the system if there are pending reservations for one of the cars he owns;
 * TODO Report

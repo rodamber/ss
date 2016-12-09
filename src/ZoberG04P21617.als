@@ -25,6 +25,8 @@ fact traces {
         some c, c': Client |
         some d: Driver |
         some car, car': Car |
+        some r: Ride |
+        some grade: Int |
             newClient[z, z', c]                      or
             removeClient[z, z', c]                   or 
             upgradePlan[z, z', c, c']                or
@@ -37,17 +39,24 @@ fact traces {
             addDriverToCar[z, z', car, car', d]      or
             removeDriverFromCar[z, z', car, car', d] or
             upgradeService[z, z', car, car']         or
-            downgradeService[z, z', car, car']
+            downgradeService[z, z', car, car']       or
+            newRide[z, z', r]                        or
+            cancelRide[z, z', r]                     or
+            completeRide[z, z', r, grade]
 }
 
 // fact debug_trace {
 //     first.zoberInit
-//     all z: Zober - last | let z' = z.next | 
-//         some c: Car |
-//             some d: Driver |
-//                 addCar[z, z', c] or
-//                 newDriver[z, z', d] or
-//                 removeCar[z, z', c]
+//     all z: Zober - last |  let z' = z.next | 
+//         some c: Client |
+//         // some d: Driver |
+//         // some car: Car |
+//         // some r: Ride |
+//         // some grade: Int |
+//              newClient[z, z', c] //or
+//              // newDriver[z, z', d] or
+//              // addCar[z, z', car] or
+//              // newRide[z, z', r]
 // }
 
 // ------------------------------ CLIENTS --------------------------------------
@@ -69,10 +78,11 @@ pred newClient(z, z': Zober, c: z'.clients - z.clients) {
     c.email not in z.clients.email // Req. 3
     c.plan in REGULAR
 
-    z'.clients = z.clients + c
-    z'.drivers = z.drivers
+    z'.clients       = z.clients + c
+    z'.drivers       = z.drivers
     z'.bannedDrivers = z.bannedDrivers
-    z'.cars = z.cars
+    z'.cars          = z.cars
+    z'.rides         = z.rides
 }
 
 // Req. 8
@@ -80,10 +90,11 @@ pred removeClient(z, z': Zober, c: z.clients - z'.clients) {
     c in z.clients // fixme: I don't know why, but alloy seems to ignore the fact
                    // that c is in z.clients
 
-    z'.clients = z.clients - c
-    z'.drivers = z.drivers
+    z'.clients       = z.clients - c
+    z'.drivers       = z.drivers
     z'.bannedDrivers = z.bannedDrivers
-    z'.cars = z.cars
+    z'.cars          = z.cars
+    z'.rides         = z.rides
 }
 
 pred upgradePlan(z, z': Zober, c: z.clients, c': z'.clients) {
@@ -168,10 +179,11 @@ sig License {}
 pred newDriver(z, z': Zober, d: z'.drivers - z.drivers) {
     d.license not in z.drivers.license // Req. 13
 
-    z'.clients = z.clients
-    z'.drivers = z.drivers + d
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers + d
     z'.bannedDrivers = z.bannedDrivers
-    z'.cars = z.cars
+    z'.cars          = z.cars
+    z'.rides         = z.rides
 }
 
 pred removeDriver(z, z': Zober, d: z.drivers - z'.drivers) {
@@ -184,6 +196,9 @@ pred removeDriver(z, z': Zober, d: z.drivers - z'.drivers) {
     z'.cars = z.cars - owner.d
 
     removeDriverFromRegisteredCars[z, z', d]
+
+    // A driver can't be removed if a car he owns has a pending ride.
+    // fixme
 }
 
 pred banDriver(z, z': Zober, d: z.drivers) {
@@ -194,6 +209,10 @@ pred banDriver(z, z': Zober, d: z.drivers) {
     z'.cars = z.cars - owner.d
 
     removeDriverFromRegisteredCars[z, z', d]
+
+    //fixme
+    // if a driver is banned cancel all the rides related with the cars s/he owns
+
 }
 
 // Req. 13
@@ -251,10 +270,11 @@ pred addCar(z, z': Zober, c: z'.cars - z.cars) {
     all d: c.drivers | #(z.cars <: drivers).d < 2 // Req. 23
     c.service in ZoberY                           // Req. 26
 
-    z'.cars = z.cars + c
-    z'.clients = z.clients
-    z'.drivers = z.drivers
+    z'.cars          = z.cars + c
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers
     z'.bannedDrivers = z.bannedDrivers
+    z'.rides         = z.rides
 }
 
 pred removeCar(z, z': Zober, c: z.cars - z'.cars) {
@@ -266,6 +286,10 @@ pred removeCar(z, z': Zober, c: z.cars - z'.cars) {
     z'.clients = z.clients
     z'.drivers = z.drivers
     z'.bannedDrivers = z.bannedDrivers
+
+    // fixme Req. 39
+    // a car cannot be removed from the system if there are pending reservations
+    // for this car
 }
 
 pred addDriverToCar(z, z': Zober, c: z.cars, c': z'.cars, d: z.drivers) {
@@ -275,6 +299,9 @@ pred addDriverToCar(z, z': Zober, c: z.cars, c': z'.cars, d: z.drivers) {
     c'.owner = c.owner
     c'.drivers = c.drivers + d
 
+    // fixme: check if this holds now that we've added rides
+    // maybe it doesn't because cars can't be removed if there are pending rides
+    // for it
     addCar[z, z', c']
     removeCar[z, z', c]
 }
@@ -291,6 +318,9 @@ pred upgradeService(z, z': Zober, c: z.cars, c': z'.cars) {
     c'.owner = c.owner
     c'.drivers = c.drivers
 
+    // fixme: check if this holds now that we've added rides
+    // maybe it doesn't because cars can't be removed if there are pending rides
+    // for it
     addCar[z, z', c']
     removeCar[z, z', c]
 }
@@ -357,7 +387,6 @@ onlyRegisteredCarsMayBeRemoved: check {
 } for 5
 
 // Req. 28
-// fixme: what about the every part?
 onlyRegistedDriversMayBeRemovedFromACar: check {
     all z, z': Zober, c, c': Car, d: Driver |
         removeDriverFromCar[z, z', c, c', d] => d in z.drivers
@@ -369,82 +398,121 @@ onlyRegistedDriversMayBeRemovedFromACar: check {
 sig Ride {
     car: one Car,
     client: one Client,
-    service: ZoberService,
+    service: ZoberY + ZoberWhite,
     beginning: one Int, // fixme: should really use ints or some ordered type?
     end: one Int,
     rate: lone Int
 }
 
-// pred newRide(z, z': Zober, r: Ride) {
-//     r.service = r.car.service // Req. 30
-//     r.beginning < r.end       // Req. 31
-//     carIsAvailable[z, r.car]  // Req. 32
-//     no rate
+pred newRide(z, z': Zober, r: Ride) {
+    // For req. 30 we're interested that the car is at least as good as we need.
+    r.service = ZoberWhite => r.car.service = ZoberWhite // Req. 30
 
-//     // fixme: incomplete
-// }
+    r.beginning < r.end  // Req. 31
+    carIsAvailable[z, r] // Req. 32
 
-// pred cancelRide() {
-// }
+    no r.rate
 
-// pred completeRide() {
-// }
+    r.car in z.cars
+    r.client in z.clients
 
-// // fixme: utils?
-// pred carIsAvailable(z: Zober, c: z.cars) {
-//     c in z.cars // fixme: must check availability
-// }
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers
+    z'.bannedDrivers = z.bannedDrivers
+    z'.cars          = z.cars
+    z'.rides         = z.rides + r
+}
 
+pred cancelRide(z, z': Zober, r: z.rides) {
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers
+    z'.bannedDrivers = z.bannedDrivers
+    z'.cars          = z.cars
+    z'.rides         = z.rides - r
+}
 
-// // Req. 30
-// carHasSameServiceAsRide: check {
-//     all r: Ride |
-//         r.service = r.car.service
-// } for 5
+pred completeRide(z, z': Zober, r: z.rides, grade: Int) {
+    no r.rate
 
-// // Req. 31
-// : check {
-// } for 5
+    z'.clients       = z.clients
+    z'.drivers       = z.drivers
+    z'.bannedDrivers = z.bannedDrivers
+    z'.cars          = z.cars
+    z'.rides         = z.rides
 
-// // Req. 32
-// : check {
-// } for 5
+    z'.rides <: rate = z.rides <: rate + r->grade
+}
 
-// // Req. 33
-// : check {
-// } for 5
+// Req. 30
+carIsAtLeastAsGoodAsWeNeed: check {
+    all z: Zober, r: z.rides |
+        r.service = ZoberWhite => r.car.service = ZoberWhite
+} for 2 but 1 Client, 1 Ride, 1 Car, 1 Driver
 
-// // Req. 34
-// : check {
-// } for 5
+// Req. 31
+everyRideIsWellFormed: check {
+    all z: Zober, r: z.rides |
+        r.beginning < r.end
+} for 5
 
-// // Req. 35
-// : check {
-// } for 5
+// Req. 32
+noCarHasOverlappingRides: check {
+    all z: Zober, c: z.cars, r, r': car.c |
+        r.end < r'.beginning or r'.end < r.beginning
+} for 5
 
-// // Req. 36
-// : check {
-// } for 5
+// Req. 33
+everyCompletedRideHasRating: check {
+    all z: Zober, r: z.rides |
+        no r.rate => not rideIsCompleted[z, r]
+} for 5
 
-// // Req. 37
-// : check {
-// } for 5
+// Req. 34
+regularClientsMayHaveUpTo2BookedRides: check {
+    all z: Zober, c: z.clients |
+        c.plan in REGULAR => #(bookedRides[z] <: client).c <= 2
+} for 5
 
-// // Req. 38
-// : check {
-// } for 5
+// Req. 35
+vipClientsOnlyTravelInZoberWhite: check {
+    all z: Zober, r: z.rides |
+        r.client.plan in VIP => r.service = ZoberWhite
+} for 5
 
-// // Req. 39
-// : check {
-// } for 5
+// Req. 36
+clientsWithBookedRidesMayNotBeRemoved: check {
+    all z, z': Zober, r: bookedRides[z] |
+        not removeClient[z, z', r]
+} for 5
 
-// // Req. 40
-// : check {
-// } for 5
+// Req. 37
+anyNonCompletedRideMayBeCanceled: check {
+    all z: Zober, r: bookedRides[z] |
+        some z': Zober |
+            cancelRide[z, z', r]
+} for 5
 
+// Req. 38
+bannedDriverHasItsCarsAndRidesRemoved: check {
+    all z, z': Zober, d: z.drivers |
+        banDriver[z, z', d] => 
+            // Should remove the cars owned by the driver
+            owner.d not in z'.cars and
+            // Remove the rides of cars owned by the driver
+            car.owner.d not in z'.rides
+} for 5
 
+// Req. 39
+carMayNotBeRemovedIfThereAreBookedRidesForIt: check {
+    all z, z': Zober, r: bookedRides[z] |
+        not removeCar[z, z', r.car]
+} for 5
 
-
+// Req. 40
+carOwnerMayNotBeRemovedIfThereAreBookedRidesForCarsHeOwns: check {
+    all z, z': Zober, r: bookedRides[z] |
+        not removeDriver[z, z', r.car.owner]
+} for 5
 
 // ------------------------------ UTILS ----------------------------------------
 
@@ -453,6 +521,23 @@ pred removeDriverFromRegisteredCars(z, z': Zober, d: z.drivers) {
     // This complicated mess is a simple range subtraction.
     // z'.cars <| drivers = z.cars <| drivers |>> d
     z'.cars <: drivers = (z.cars <: drivers) - (z.cars <: drivers :> d)
+}
+
+pred carIsAvailable(z: Zober, r: z.rides) {
+    all r': z.rides | r.car = r'.car => 
+        r.end < r'.beginning or r'.end < r.beginning
+}
+
+pred rideIsCompleted(z: Zober, r: z.rides) {
+    one r.(z.rides <: rate)
+}
+
+fun completedRides(z: Zober): set Ride {
+    {r in z.rides | rideIsCompleted[z, r]}
+}
+
+fun bookedRides(z: Zober): set Ride {
+    z.rides - completedRides[z]
 }
 
 // ------------------------------ RUN ------------------------------------------
