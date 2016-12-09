@@ -120,9 +120,10 @@ for some available car of type /srv/
 **** TODO completeRide
 *input*: ride, grade
 *effect*: Completes /ride/ and assigns /grade/ to it
-** TODO Restrictions
+** DONE Restrictions
+CLOSED: [2016-12-09 Fri 19:30]
 *** DONE Clients
-CLOSED: [2016-12-08 Thu 22:41]
+CLOSED: [2016-12-09 Fri 18:49]
 1. [X] Every client in CLIENT may register in Zober;
 2. [X] All clients registered in Zober have a name, and an e-mail;
 3. [X] The e-mails registered in Zober are unique;
@@ -134,7 +135,7 @@ CLOSED: [2016-12-08 Thu 22:41]
 9. [X] Only registered clients may be upgraded to profile type VIP/downgraded to profile type REGULAR;
 10. [X] Only REGULAR clients may be upgraded to VIP (and downgraded vice- versa)
 *** DONE Drivers
-CLOSED: [2016-12-08 Thu 22:39]
+CLOSED: [2016-12-09 Fri 19:30]
 11. [@11] [X] Every driver in DRIVERS may register in Zober;
 12. [X] All drivers registered in Zober have a name, and a driver’s license;
 13. [X] The driver’s licenses registered in Zober are unique;
@@ -144,7 +145,7 @@ CLOSED: [2016-12-08 Thu 22:39]
 17. [X] It is possible to ban a driver from Zober. In this case, it should not be
 possible to add him again at a later stage;
 *** DONE Cars
-CLOSED: [2016-12-09 Fri 18:14]
+CLOSED: [2016-12-09 Fri 18:58]
 18. [@18] [X] Every car in CARS may be registered in Zober, as long as it is not registered yet;
 19. [X] All cars registered in Zober have a single owner;
 20. [X] A registered car has at least 1 associated driver, and may have at most 3;
@@ -157,7 +158,8 @@ CLOSED: [2016-12-09 Fri 18:14]
 27. [X] Only (and every) registered car may be removed from Zober;
 28. [X] Every (and only) registered driver(s) may be associated with/removed
 from a car;
-*** TODO Rides
+*** DONE Rides
+CLOSED: [2016-12-09 Fri 19:29]
 29. [@29] [X] Each ride has a unique identifier and his composed of a client, a time-frame (begin and end), a type of service, and is associated with a given car.
 30. [X] The car associated with a ride, is able to provide the level of service required for that ride.
 31. [X] Every ride is well-formed, that is, the end is later than its beginning;
