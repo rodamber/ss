@@ -71,7 +71,6 @@ pred newClient(z, z': Zober, c: z'.clients - z.clients) {
     z'.rides         = z.rides
 }
 
-// Req. 8
 pred removeClient(z, z': Zober, c: z.clients - z'.clients) {
     // fixme: I don't know why, but alloy seems to ignore the fact that c is in z.clients
     c in z.clients
@@ -99,6 +98,20 @@ pred upgradePlan(z, z': Zober, c: z.clients, c': z'.clients) {
 pred downgradePlan(z, z': Zober, c: z.clients, c': z'.clients) {
     upgradePlan[z', z, c', c]
 }
+
+// Req. 1
+pred everyUnregisteredClientMayRegister {
+    some z, z': Zober |
+        all c: Client - z.clients |
+             newClient[z, z', c]
+}
+run everyUnregisteredClientMayRegister for 10
+
+// Req. 2
+allRegisteredClientsHaveNameAndEmail: check {
+    all z: Zober, c: z.clients |
+        one c.name and one c.email
+} for 10
 
 // Req. 3
 emailsAreUnique: check {
@@ -163,7 +176,6 @@ sig Driver {
 
 sig License {}
 
-// Req. 11
 pred newDriver(z, z': Zober, d: z'.drivers - z.drivers) {
     d.license not in z.drivers.license // Req. 13
 
@@ -199,6 +211,20 @@ pred banDriver(z, z': Zober, d: z.drivers) {
     removeDriverFromRegisteredCars[z, z', d]
 }
 
+// Req. 11
+pred everyUnregisteredDriverMayRegister {
+    some z, z': Zober |
+        all d: Driver - z.drivers |
+            newDriver[z, z', d]
+} 
+run everyUnregisteredDriverMayRegister for 10
+
+// Req. 12
+allRegisteredDriversHaveNameAndEmail: check {
+    all z: Zober, d: z.drivers |
+        one d.name and one d.license
+} for 10
+
 // Req. 13
 licensesAreUnique: check {
     all z: Zober, d1, d2: z.drivers | 
@@ -220,11 +246,6 @@ mayOnlyRegisterDriverIfNotYetRegistered: check {
 onlyRegisteredDriversMayBeRemoved: check {
     all z, z': Zober, d: Driver |
         removeDriver[z, z', d] => d in z.drivers
-} for 10
-
-bannedDriversMayNotDrive: check {
-    all z: Zober, d: z.bannedDrivers |
-        d not in z.drivers
 } for 10
 
 // Req. 17
@@ -372,6 +393,7 @@ onlyRegistedDriversMayBeRemovedFromACar: check {
 // ------------------------------ RIDES ----------------------------------------
 
 sig Ride {
+    id: one Int, // fixme: do we really need this? every atom is uniquely identifiable by definition...
     car: one Car,
     client: one Client,
     service: ZoberY + ZoberWhite,
@@ -381,6 +403,8 @@ sig Ride {
 }
 
 pred newRide(z, z': Zober, r: Ride) {
+    r.id not in z.rides.id // Req. 29
+
     // For req. 30 we're interested that the car is at least as good as we need.
     r.service = ZoberWhite => r.car.service = ZoberWhite // Req. 30
 
@@ -420,6 +444,19 @@ pred completeRide(z, z': Zober, r: z.rides, grade: Int) {
 
     z'.rides <: rate = z.rides <: rate + r->grade
 }
+
+// Req. 29
+everyRideHasIdClientServiceCarBeginningAndEnd: check {
+    all z: Zober, r: z.rides |
+        one r.id        and
+        one r.client    and
+        one r.service   and
+        one r.car       and
+        one r.beginning and
+        one r.end 
+    all z: Zober, r, r': z.rides |
+        r != r' => r.id != r'.id
+} for 10
 
 // Req. 30
 carIsAtLeastAsGoodAsWeNeed: check {
@@ -518,6 +555,13 @@ fun completedRides(z: Zober): set Ride {
 fun bookedRides(z: Zober): set Ride {
     z.rides - completedRides[z]
 }
+
+// ------------------------------ EXTRA CHECKS ---------------------------------
+
+bannedDriversMayNotDrive: check {
+    all z: Zober, d: z.bannedDrivers |
+        d not in z.drivers
+} for 10
 
 // ------------------------------ RUN ------------------------------------------
 
