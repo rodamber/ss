@@ -482,7 +482,7 @@ vipClientsOnlyTravelInZoberWhite: check {
 // Req. 36
 clientsWithBookedRidesMayNotBeRemoved: check {
     all z, z': Zober, r: bookedRides[z] |
-        not removeClient[z, z', r]
+        not removeClient[z, z', r.client]
 } for 5
 
 // Req. 37
@@ -533,7 +533,8 @@ pred rideIsCompleted(z: Zober, r: z.rides) {
 }
 
 fun completedRides(z: Zober): set Ride {
-    {r in z.rides | rideIsCompleted[z, r]}
+    {r: z.rides | rideIsCompleted[z, r]}
+    // {r in z.rides | True}
 }
 
 fun bookedRides(z: Zober): set Ride {
