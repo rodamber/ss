@@ -1,4 +1,5 @@
 open util/ordering[Zober] as ZoberStates
+open util/integer as integer
 
 // ------------------------------ ZOBER ----------------------------------------
 
@@ -7,7 +8,7 @@ sig Zober {
     drivers: set Driver,
     bannedDrivers: set (Driver - drivers),
     cars: set Car,
-    // rides: set Ride,
+    rides: set Ride,
 }
 
 pred zoberInit[z: Zober] {
@@ -15,38 +16,39 @@ pred zoberInit[z: Zober] {
     no z.drivers       // Req. 14
     no z.bannedDrivers // Req. 14
     no z.cars          // Req. 25
+    no z.rides
 }
 
-// fact traces {
-//     first.zoberInit
-//     all z: Zober - last | let z' = z.next | 
-//         some c, c': Client |
-//         some d: Driver |
-//         some car, car': Car |
-//             newClient[z, z', c]                      or
-//             removeClient[z, z', c]                   or 
-//             upgradePlan[z, z', c, c']                or
-//             downgradePlan[z, z', c, c']              or
-//             newDriver[z, z', d]                      or
-//             removeDriver[z, z', d]                   or
-//             banDriver[z, z', d]                      or
-//             addCar[z, z', car]                       or
-//             removeCar[z, z', car]                    or
-//             addDriverToCar[z, z', car, car', d]      or
-//             removeDriverFromCar[z, z', car, car', d] or
-//             upgradeService[z, z', car, car']         or
-//             downgradeService[z, z', car, car']
-// }
-
-fact debug_trace {
+fact traces {
     first.zoberInit
     all z: Zober - last | let z' = z.next | 
-        some c: Car |
-            some d: Driver |
-                addCar[z, z', c] or
-                newDriver[z, z', d] or
-                removeCar[z, z', c]
+        some c, c': Client |
+        some d: Driver |
+        some car, car': Car |
+            newClient[z, z', c]                      or
+            removeClient[z, z', c]                   or 
+            upgradePlan[z, z', c, c']                or
+            downgradePlan[z, z', c, c']              or
+            newDriver[z, z', d]                      or
+            removeDriver[z, z', d]                   or
+            banDriver[z, z', d]                      or
+            addCar[z, z', car]                       or
+            removeCar[z, z', car]                    or
+            addDriverToCar[z, z', car, car', d]      or
+            removeDriverFromCar[z, z', car, car', d] or
+            upgradeService[z, z', car, car']         or
+            downgradeService[z, z', car, car']
 }
+
+// fact debug_trace {
+//     first.zoberInit
+//     all z: Zober - last | let z' = z.next | 
+//         some c: Car |
+//             some d: Driver |
+//                 addCar[z, z', c] or
+//                 newDriver[z, z', d] or
+//                 removeCar[z, z', c]
+// }
 
 // ------------------------------ CLIENTS --------------------------------------
 
@@ -364,7 +366,84 @@ onlyRegistedDriversMayBeRemovedFromACar: check {
 
 // ------------------------------ RIDES ----------------------------------------
 
-// sig Ride {}
+sig Ride {
+    car: one Car,
+    client: one Client,
+    service: ZoberService,
+    beginning: one Int, // fixme: should really use ints or some ordered type?
+    end: one Int,
+    rate: lone Int
+}
+
+// pred newRide(z, z': Zober, r: Ride) {
+//     r.service = r.car.service // Req. 30
+//     r.beginning < r.end       // Req. 31
+//     carIsAvailable[z, r.car]  // Req. 32
+//     no rate
+
+//     // fixme: incomplete
+// }
+
+// pred cancelRide() {
+// }
+
+// pred completeRide() {
+// }
+
+// // fixme: utils?
+// pred carIsAvailable(z: Zober, c: z.cars) {
+//     c in z.cars // fixme: must check availability
+// }
+
+
+// // Req. 30
+// carHasSameServiceAsRide: check {
+//     all r: Ride |
+//         r.service = r.car.service
+// } for 5
+
+// // Req. 31
+// : check {
+// } for 5
+
+// // Req. 32
+// : check {
+// } for 5
+
+// // Req. 33
+// : check {
+// } for 5
+
+// // Req. 34
+// : check {
+// } for 5
+
+// // Req. 35
+// : check {
+// } for 5
+
+// // Req. 36
+// : check {
+// } for 5
+
+// // Req. 37
+// : check {
+// } for 5
+
+// // Req. 38
+// : check {
+// } for 5
+
+// // Req. 39
+// : check {
+// } for 5
+
+// // Req. 40
+// : check {
+// } for 5
+
+
+
 
 
 // ------------------------------ UTILS ----------------------------------------

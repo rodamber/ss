@@ -156,7 +156,7 @@ CLOSED: [2016-12-09 Fri 02:39]
 28. [X] Every (and only) registered driver(s) may be associated with/removed
 from a car;
 *** TODO Rides
-29. [@29] [ ] Each ride has a unique identifier and his composed of a client, a time-frame (begin and end), a type of service, and is associated with a given car.
+29. [@29] [X] Each ride has a unique identifier and his composed of a client, a time-frame (begin and end), a type of service, and is associated with a given car.
 30. [ ] The car associated with a ride, is able to provide the level of service required for that ride.
 31. [ ] Every ride is well-formed, that is, the end is later than its beginning;
 32. [ ] No car has overlapping rides;
