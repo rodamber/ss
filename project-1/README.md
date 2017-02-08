@@ -1,5 +1,8 @@
 # Project 1
 
+In this project we applied the [Event-B](http://www.event-b.org/) formal method
+with the Rodin Platform tool in order to develop a model of a "complex" system.
+
 The problem is defined in spec.pdf. The refinement strategy is detailed in
 Zober-G04-P1-1617.pdf.
 
